@@ -9,7 +9,9 @@
 ## Current Execution Branches
 - Initialized repository with main
 - Created develop from main
-- Active branch: feature/bootstrap-foundation
+- Merged feature/bootstrap-foundation into develop
+- Merged feature/backend-tenancy-rbac into develop
+- Active branch: feature/tests-hardening
 
 ## Commit Rules
 - Make small, meaningful commits by feature scope.
