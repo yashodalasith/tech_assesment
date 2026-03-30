@@ -1,24 +1,30 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsAdminManagerOrReadOnly(BasePermission):
-    """Admin: full access, Manager: no delete, Staff: read + create/update only."""
+class RoleBasedCRMPermission(BasePermission):
+    """Role-aware permission rules for CRM endpoints."""
 
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
 
         role = request.user.role
+        basename = getattr(view, "basename", "")
+
         if request.method in ("GET", "HEAD", "OPTIONS"):
             return True
+
         if request.method == "DELETE":
             return role == request.user.Roles.ADMIN
+
         if request.method in ("POST", "PUT", "PATCH"):
-            return role in {
-                request.user.Roles.ADMIN,
-                request.user.Roles.MANAGER,
-                request.user.Roles.STAFF,
-            }
+            if role == request.user.Roles.ADMIN:
+                return True
+            if role == request.user.Roles.MANAGER:
+                return True
+            if role == request.user.Roles.STAFF:
+                return basename == "contact"
+
         return False
 
 

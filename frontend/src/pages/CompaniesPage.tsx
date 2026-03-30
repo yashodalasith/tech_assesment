@@ -3,26 +3,35 @@ import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { api } from '../api/client'
-import type { Company } from '../types/api'
+import type { ApiListResponse, Company, PaginationMeta } from '../types/api'
 
 export function CompaniesPage() {
   const [companies, setCompanies] = useState<Company[]>([])
   const [name, setName] = useState('')
   const [industry, setIndustry] = useState('')
   const [country, setCountry] = useState('')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null)
   const [error, setError] = useState('')
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = async (targetPage = page, targetSearch = search) => {
     try {
-      const response = await api.get('/companies/')
+      const response = await api.get<ApiListResponse<Company>>('/companies/', {
+        params: {
+          page: targetPage,
+          search: targetSearch || undefined,
+        },
+      })
       setCompanies(response.data.data)
+      setPagination(response.data.pagination ?? null)
     } catch {
       setError('Unable to fetch companies.')
     }
   }
 
   useEffect(() => {
-    fetchCompanies()
+    fetchCompanies(1, '')
   }, [])
 
   const createCompany = async (event: FormEvent) => {
@@ -38,10 +47,21 @@ export function CompaniesPage() {
       setName('')
       setIndustry('')
       setCountry('')
-      fetchCompanies()
+      fetchCompanies(page, search)
     } catch {
       setError('Failed to create company. Check role permissions.')
     }
+  }
+
+  const onSearchSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    setPage(1)
+    fetchCompanies(1, search)
+  }
+
+  const goToPage = (targetPage: number) => {
+    setPage(targetPage)
+    fetchCompanies(targetPage, search)
   }
 
   return (
@@ -61,6 +81,17 @@ export function CompaniesPage() {
           <input value={country} onChange={(event) => setCountry(event.target.value)} />
         </label>
         <button type="submit">Create Company</button>
+      </form>
+      <form onSubmit={onSearchSubmit} className="card search-row">
+        <label>
+          Search companies
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by name, industry, country"
+          />
+        </label>
+        <button type="submit">Search</button>
       </form>
       {error && <p className="error-text">{error}</p>}
       <div className="table-wrap">
@@ -87,6 +118,27 @@ export function CompaniesPage() {
           </tbody>
         </table>
       </div>
+      {pagination && (
+        <div className="pagination-row">
+          <button
+            type="button"
+            disabled={!pagination.previous}
+            onClick={() => goToPage(page - 1)}
+          >
+            Previous
+          </button>
+          <span>
+            Page {pagination.page} of {pagination.total_pages}
+          </span>
+          <button
+            type="button"
+            disabled={!pagination.next}
+            onClick={() => goToPage(page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </section>
   )
 }

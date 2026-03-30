@@ -43,8 +43,23 @@ class ContactSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         request = self.context["request"]
         company = attrs.get("company") or self.instance.company
+        email = attrs.get("email") or self.instance.email
+
         if company.organization_id != request.user.organization_id:
             raise serializers.ValidationError(
                 {"company": "Selected company does not belong to your organization."}
             )
+
+        duplicate_qs = Contact.objects.filter(
+            company=company,
+            email=email,
+            is_deleted=False,
+        )
+        if self.instance:
+            duplicate_qs = duplicate_qs.exclude(pk=self.instance.pk)
+        if duplicate_qs.exists():
+            raise serializers.ValidationError(
+                {"email": "Email must be unique within the same company."}
+            )
+
         return attrs

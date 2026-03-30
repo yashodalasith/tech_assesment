@@ -1,15 +1,17 @@
+export type PaginationMeta = {
+  count: number
+  page: number
+  page_size: number
+  total_pages: number
+  next: string | null
+  previous: string | null
+}
+
 export type ApiListResponse<T> = {
   success: boolean
   message: string
   data: T[]
-  pagination?: {
-    count: number
-    page: number
-    page_size: number
-    total_pages: number
-    next: string | null
-    previous: string | null
-  }
+  pagination?: PaginationMeta
 }
 
 export type ApiItemResponse<T> = {
