@@ -105,6 +105,13 @@ button:disabled {
   align-items: end;
 }
 
+.search-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -131,6 +138,13 @@ td {
 
 .error-text {
   color: #b42318;
+}
+
+.pagination-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 @media (max-width: 860px) {

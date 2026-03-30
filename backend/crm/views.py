@@ -3,7 +3,7 @@ from rest_framework import filters, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.permissions import IsAdminManagerOrReadOnly
+from accounts.permissions import RoleBasedCRMPermission
 from audit.models import ActivityLog
 from audit.services import log_activity
 from crm.models import Company, Contact
@@ -11,7 +11,7 @@ from crm.serializers import CompanySerializer, ContactSerializer
 
 
 class TenantScopedModelViewSet(viewsets.ModelViewSet):
-	permission_classes = [IsAuthenticated, IsAdminManagerOrReadOnly]
+	permission_classes = [IsAuthenticated, RoleBasedCRMPermission]
 	filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
 	def get_queryset(self):
