@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Django static/media cache
+backend/staticfiles/
+backend/media/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Env files
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# IDE/OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local helper files
+local_notes/
+docs/demo-helper.local.md
+docs/status-tracker.local.md
