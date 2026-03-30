@@ -1,33 +1,34 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { api } from '../api/client'
-import { useAuthStore } from '../store/authStore'
+import { api } from "../api/client";
+import { useAuthStore } from "../store/authStore";
 
 export function LoginPage() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-  const setTokens = useAuthStore((state) => state.setTokens)
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const setTokens = useAuthStore((state) => state.setTokens);
 
   const onSubmit = async (event: FormEvent) => {
-    event.preventDefault()
-    setLoading(true)
-    setError('')
+    event.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await api.post('/auth/token/', { username, password })
-      setTokens(response.data.access, response.data.refresh)
-      navigate('/dashboard')
+      const response = await api.post("/auth/token/", { username, password });
+      const tokenData = response.data?.data;
+      setTokens(tokenData.access, tokenData.refresh);
+      navigate("/dashboard");
     } catch {
-      setError('Invalid credentials. Please try again.')
+      setError("Invalid credentials. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <section className="card login-card">
@@ -53,9 +54,9 @@ export function LoginPage() {
         </label>
         {error && <p className="error-text">{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign In'}
+          {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
     </section>
-  )
+  );
 }
